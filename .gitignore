@@ -1,4 +1,6 @@
 .env
 /node_modules
 /client/node_modules
-MyDBData.json
+MyDBDataTv.json
+MyDBDataPhones.json
+MyDBDataNotebook.json

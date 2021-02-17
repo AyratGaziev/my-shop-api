@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 
 const Schema = mongoose.Schema
 
-const Snowboard = new Schema({
+const Product = new Schema({
     name: {
         type: String,
         required: true,
@@ -12,6 +12,12 @@ const Snowboard = new Schema({
         type: Number,
         required: true,
         trim: true,
+    },
+    discount: {
+        type: Number,
+        trim: true,
+        min: 0.1,
+        max: 1
     },
     category: {
         type: String,
@@ -23,30 +29,21 @@ const Snowboard = new Schema({
         required: true,
         trim: true,
     },
-    material: {
-        type: String,
-        required: true,
-        trim: true,
-    },
-    purpose: {
-        type: String,
-        required: true,
-        trim: true,
-    },
-    brand: {
-        type: String,
-        required: true,
-        trim: true,
-    },
-    size: [{ size: String }],
     description: {
         type: String,
         required: true,
         trim: true,
     },
-    img_id: Number
-})
+    features: [{
+        name: String,
+        descrition: String
+    }],
+    img: {
+        type: String,
+        required: true
+    }
+},{ versionKey: false })
 
-const ShopSnowboard = mongoose.model('Snowboard', Snowboard)
+const ShopProduct= mongoose.model('Product', Product)
 
-module.exports = ShopSnowboard
+module.exports = ShopProduct
