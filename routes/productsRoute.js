@@ -1,7 +1,8 @@
 const router = require('express').Router()
 const ShopProduct = require('../models/product.model')
 
-//GET requests
+//GET REQUESTS
+//GET all products & products by category, without limit & skiping 
 router.route('/products').get((req, res) => {
     ShopProduct.find().then(product => res
         .json(product))
@@ -22,26 +23,93 @@ router.route('/products/tv').get((req, res) => {
         .json(product))
         .catch(err => res.status('400').json('Error:' + err))
 })
-router.route('/products/from/:start/limit/:limit').get((req, res) => {
-    const {start,limit} = req.params
-    ShopProduct.find()
-        .sort({ discount: 1 })
-        .skip(+start)
-        .limit(+limit)
-        .then(product => {
-            return res.json(product)
-        })
-        .catch(err => res.status('400').json('Error:' + err))
-})
-router.route('/products/some/limit/:limit/start/:start').get((req, res) => {
+
+//GET all products, skip some limited response
+router.route('/products/limit/:limit/start/:start').get((req, res) => {
     const { start, limit } = req.params
-    console.log(req.params);
-    ShopProduct.find()
-        .sort({ discount: 1 })
-        .skip(+start)
-        .limit(+limit)
-        .then(product => res.json(product))
-        .catch(err => res.status('400').json('Error:' + err))
+
+    ShopProduct.countDocuments((err, count) => {
+        if (err) {
+            res.sendStatus(400).json('Error: ' + err)
+        }
+
+        ShopProduct
+            .find()
+            .sort({ price: 1 })
+            .skip(+start)
+            .limit(+limit)
+            .then(allProducts => {
+                if (start + limit === count || allProducts.length < limit) {
+                    res.json({allProducts, done: true})
+                } else {
+                    res.json({allProducts, done: false})
+                }
+            })
+    })  
+       
+})
+//GET some products, skip some limited response
+router.route('/products/some/limit/:limit/start/:start/category/:category').get((req, res) => {
+    const { start, limit, category } = req.params
+
+    if (category === 'allProducts') {
+        ShopProduct.find().countDocuments((err, count) => {
+            if (err) {
+                res.sendStatus(400).json('Error: ' + err)
+            }
+
+            ShopProduct
+                .find()
+                .sort({ price: 1 })
+                .skip(+start)
+                .limit(+limit)
+                .then(products => {
+
+                    if ((+start) + (+limit) === count || products.length < limit) {
+                        res.json({
+                            products,
+                            done: true,
+                            category
+                        })
+                    } else {
+                        res.json({
+                            products,
+                            done: false,
+                            category
+                        })
+                    }
+                })
+        })  
+    } else {
+        ShopProduct.find({category}).countDocuments((err, count) => {
+            if (err) {
+                res.sendStatus(400).json('Error: ' + err)
+            }
+
+            ShopProduct
+                .find({category})
+                .sort({ price: 1 })
+                .skip(+start)
+                .limit(+limit)
+                .then(products => {
+
+                    if ((+start) + (+limit) === count || products.length < limit) {
+                        res.json({
+                            products,
+                            done: true,
+                            category
+                        })
+                    } else {
+                        res.json({
+                            products,
+                            done: false,
+                            category
+                        })
+                    }
+                })
+        })  
+    }
+       
 })
 
 //POST requests
