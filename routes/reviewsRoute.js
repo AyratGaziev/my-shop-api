@@ -26,7 +26,7 @@ router.route('/reviews/add').post((req, res) => {
     const newReview = new ShopReviews(req.body)
     newReview
         .save()
-        .then(() => res.json(`Added ${req.body.name}`))
+        .then(() => res.json(req.body))
         .catch((err)=> res.json("Error"+err))
 })
 
