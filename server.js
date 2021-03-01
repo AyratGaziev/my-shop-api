@@ -21,7 +21,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 //Route middleware
 const ProductRoute = require('./routes/productsRoute')
+const ReviewsRoute = require('./routes/reviewsRoute')
 app.use('/', ProductRoute)
+app.use('/', ReviewsRoute)
 
 //Connecting to mongodb
 require('dotenv').config()

@@ -1,5 +1,6 @@
 const router = require('express').Router()
 const ShopProduct = require('../models/product.model')
+const ShopReviews = require('../models/reviews.model')
 
 //GET REQUESTS
 //GET all products & products by category, without limit & skiping 
@@ -110,6 +111,54 @@ router.route('/products/some/limit/:limit/start/:start/category/:category').get(
         })  
     }
        
+})
+//GET search products, skip some limited response
+router.route('/products/some/limit/:limit/start/:start/category/:category/searchText/:searchText').get((req, res) => { 
+	const { limit, start, searchText, category } = req.params
+	ShopProduct.find({ name: { $regex: searchText.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), $options: "$i" } }).countDocuments((err, count) => {
+		if (err) {
+			res.sendStatus(400).json('Error: ' + err)
+		}
+
+		ShopProduct
+			.find({ name: { $regex: searchText.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), $options: "$i" } })
+			.sort({ price: 1 })
+			.skip(+start)
+			.limit(+limit)
+			.then(products => {
+
+				if ((+start) + (+limit) === count || products.length < limit) {
+					res.json({
+						products,
+						done: true,
+						category
+					})
+				} else {
+					res.json({
+						products,
+						done: false,
+						category
+					})
+				}
+			})
+	})
+})
+//GET one product by ID
+router.route('/products/prodId/:id').get((req, res) => {
+    const {id} = req.params
+    ShopProduct.findOne({ _id: id })
+        .then(product => {
+            ShopReviews.find({ prodId: id }, (err, reviews) => {
+                if (err) {
+                    res.sendStatus(400).json('Error'+err)
+                }
+                res.json({
+                    product,
+                    reviews
+                })    
+            })
+        })
+        .catch(err => res.status('400').json('Error:' + err))
 })
 
 //POST requests
