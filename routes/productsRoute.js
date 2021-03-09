@@ -31,7 +31,7 @@ router.route("/products/limit/:limit/start/:start").get((req, res) => {
 
     ShopProduct.countDocuments((err, count) => {
         if (err) {
-            res.sendStatus(400).json("Error: " + err);
+            res.sendStatus(400).json("Товары не найдены");
         }
 
         ShopProduct.find()
@@ -44,6 +44,9 @@ router.route("/products/limit/:limit/start/:start").get((req, res) => {
                 } else {
                     res.json({ allProducts, done: false });
                 }
+            })
+            .catch((err) => {
+                res.sendStatus(400).json("Товары не найдены");
             });
     });
 });
@@ -176,7 +179,7 @@ router.route("/products/prodId/:id").get((req, res) => {
                 });
             });
         })
-        .catch((err) => res.status("400").json("Error:" + err));
+        .catch((err) => res.status("400").json("Товар не найден"));
 });
 
 //POST requests
