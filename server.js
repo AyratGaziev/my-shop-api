@@ -22,9 +22,11 @@ app.use(express.static(path.join(__dirname, "public")));
 const ProductRoute = require("./routes/productsRoute");
 const ReviewsRoute = require("./routes/reviewsRoute");
 const AuthRuter = require("./routes/authRouter");
+const OrdersRouter = require("./routes/ordersRouter");
 app.use("/", AuthRuter);
 app.use("/", ProductRoute);
 app.use("/", ReviewsRoute);
+app.use("/", OrdersRouter);
 
 //Connecting to mongodb
 require("dotenv").config();
