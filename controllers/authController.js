@@ -3,7 +3,12 @@ const Role = require("../models/role.model");
 const bcrypt = require("bcryptjs");
 const { validationResult } = require("express-validator");
 const jwt = require("jsonwebtoken");
-const { secret } = require("../config");
+// const { secret } = require("../config");
+
+require("dotenv").config();
+
+const secret = process.env.SECRET;
+console.log(secret);
 
 const generateAccessToken = (id, roles) => {
     const payload = { id, roles };
