@@ -8,7 +8,6 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
 const secret = process.env.SECRET;
-console.log(secret);
 
 const generateAccessToken = (id, roles) => {
     const payload = { id, roles };
